@@ -91,7 +91,7 @@ export const GET = async () => {
   return NextResponse.json([]);
 };
 
-export const logRateLimitHeaders = (res: Response) => {
+const logRateLimitHeaders = (res: Response) => {
   console.log('------------------------------');
   // @ts-ignore
   for (const [key, value] of res.headers.entries()) {
