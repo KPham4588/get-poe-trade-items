@@ -6,11 +6,9 @@ import { pointer } from "../../../mysql/schema/pointer";
 import { sql } from 'drizzle-orm';
 import { sleep } from "radash";
 
-export const GET = async () => {
-  if (process.env.NODE_ENV != 'production') {
-    return;
-  }
+export const dynamic = 'force-dynamic';
 
+export const GET = async () => {
   const startTime = Date.now();
   const fourMinsFiftySecs = 290000;
   const timeLimit = startTime + fourMinsFiftySecs;
