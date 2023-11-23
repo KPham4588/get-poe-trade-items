@@ -3,6 +3,7 @@ import { getDB } from "../../../mysql";
 import { getItemName } from "../../../lib/getItemName";
 import { Item } from "../../../types/PoeGGG";
 import { items } from "../../../mysql/schema/items";
+import { pointer } from "../../../mysql/schema/pointer";
 import { and, sql } from 'drizzle-orm';
 import exp from "constants";
 import { date } from "drizzle-orm/mysql-core";
@@ -15,12 +16,21 @@ export const GET = async () => {
   const timeLimit = startTime + fourMinsFiftySecs;
   var timeOflastRequest = 0;
   var data;
+  const temporaryPointer = '2143391979-2135730237-2066368695-2294261767-2226642058';
+  const db = getDB();
+  var currentPointer = '';
 
-  // need to get from database
-  var stashTabPointer = '2143391979-2135730237-2066368695-2294261767-2226642058';
+  console.log("Getting pointer from database.");
+  var stashTabPointer = await db.select({
+    pointerValue: pointer.pointerValue
+  }).from(pointer);
+  if (stashTabPointer.length == 0) {
+    stashTabPointer[0] = { pointerValue: temporaryPointer };
+  }
+  currentPointer = stashTabPointer[0].pointerValue;
   
   while(Date.now() < timeLimit) {
-    const res = await fetch(`${process.env.POE_API_URL}/public-stash-tabs?id=${stashTabPointer}}`, {
+    const res = await fetch(`${process.env.POE_API_URL}/public-stash-tabs?id=${currentPointer}}`, {
       headers: {
         authorization: `Bearer 3bd328f3082816026e52d71629a03810c99eb5db`,
         'User-Agent':
@@ -36,9 +46,8 @@ export const GET = async () => {
     logRateLimitHeaders(res);
 
     data = await res.json();
-    stashTabPointer = data.next_change_id;
-    const db = getDB();
-
+    currentPointer = data.next_change_id;
+    
     let stashes = data.stashes;
 
     var itemsToInsert = null;
@@ -96,7 +105,18 @@ export const GET = async () => {
     }
   }
 
-  // save pointer to db
+  // save pointer to db (check to see if there's a pointer; if yes, replace)
+  console.log("Saving newest pointer to database.");
+  var pointerFromDb = await db.select({
+    pointerValue: pointer.pointerValue
+  }).from(pointer);
+  if (pointerFromDb.length == 0) {
+    await db.insert(pointer).values({ pointerValue: currentPointer });
+  }
+  else {
+    await db.update(pointer)
+      .set(({ pointerValue: currentPointer}));
+  }
 
   return NextResponse.json(data);
 };
