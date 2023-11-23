@@ -7,6 +7,10 @@ import { sql } from 'drizzle-orm';
 import { sleep } from "radash";
 
 export const GET = async () => {
+  if (process.env.NODE_ENV != 'production') {
+    return;
+  }
+
   const startTime = Date.now();
   const fourMinsFiftySecs = 290000;
   const timeLimit = startTime + fourMinsFiftySecs;
