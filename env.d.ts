@@ -9,5 +9,7 @@ namespace NodeJS {
       DATABASE_URL: string;
       REDIS_URL: string;
       REDIS_TOKEN: string;
+      POE_NINJA_POINTER: string;
+      PSAPI_ACCESS_TOKEN: string;
     }
   }
