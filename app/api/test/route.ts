@@ -90,6 +90,7 @@ export const GET = async () => {
     },
   });
   
+  //return empty json to have something returned from get request
   return NextResponse.json([]);
 };
 
