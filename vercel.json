@@ -1,14 +1,14 @@
 {
-    "crons": [
-      {
-        "path": "/api/test",
-        "schedule": "/5 * * * "
-      }
-    ],
-    "functions": {
-      "app/api/test/**/": {
-        "maxDuration": 300,
-        "memory": 500
-      }
+  "crons": [
+    {
+      "path": "/api/test",
+      "schedule": "/5 * * * *"
+    }
+  ],
+  "functions": {
+    "app/api/test/**/": {
+      "maxDuration": 300,
+      "memory": 500
     }
   }
+}
